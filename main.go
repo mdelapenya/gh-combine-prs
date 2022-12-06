@@ -6,12 +6,20 @@ import (
 	"os"
 
 	"github.com/cli/go-gh"
+	"github.com/cli/go-gh/pkg/api"
 )
 
 var helpFlag bool
+var ghClient api.RESTClient
 
 func init() {
 	flag.BoolVar(&helpFlag, "help", false, "Show help for multi-merge-prs")
+
+	client, err := gh.RESTClient(nil)
+	if err != nil {
+		panic(err)
+	}
+	ghClient = client
 }
 
 func main() {
@@ -26,13 +34,8 @@ func main() {
 }
 
 func whoami() {
-	client, err := gh.RESTClient(nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 	response := struct{ Login string }{}
-	err = client.Get("user", &response)
+	err := ghClient.Get("user", &response)
 	if err != nil {
 		fmt.Println(err)
 		return
