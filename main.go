@@ -156,7 +156,7 @@ func usage(exitCode int, args ...string) {
 		fmt.Fprintln(os.Stderr, arg)
 	}
 
-	fmt.Println(`Usage: gh combine-prs --query "QUERY" [--limit 50] [--selected-pr-numbers 42,13,78] [--skip-pr-check] [--help]
+	fmt.Println(`Usage: gh multi-merge-prs --query "QUERY" [--limit 50] [--skip-pr-check] [--help]
 Arguments:
 	`)
 	maxLength := 0
