@@ -14,6 +14,7 @@ import (
 )
 
 var helpFlag bool
+var interactiveFlag bool
 var limitFlag int
 var queryFlag string
 var skipPRCheckFlag bool
@@ -23,6 +24,7 @@ var currentRepo repository.Repository
 
 func init() {
 	flag.BoolVar(&helpFlag, "help", false, "Show help for multi-merge-prs")
+	flag.BoolVar(&interactiveFlag, "interactive", false, "Enable interactive mode. If set, will prompt for selecting the PRs to merge")
 	flag.IntVar(&limitFlag, "limit", 50, "Sets the maximum number of PRs that will be combined. Defaults to 50")
 	flag.StringVar(&queryFlag, "query", "", `sets the query used to find combinable PRs. e.g. --query "author:app/dependabot to combine Dependabot PRs`)
 	flag.BoolVar(&skipPRCheckFlag, "skip-pr-check", false, `if set, will combine matching PRs even if they are not passing checks. Defaults to false when not specified`)
@@ -53,7 +55,7 @@ func main() {
 		usage(1, "ERROR: --query is required")
 	}
 
-	selectedPRs, err := selectPRsPrompt()
+	selectedPRs, err := selectPRs(interactiveFlag)
 	if err != nil {
 		panic(err)
 	}
@@ -101,7 +103,7 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 	return true, nil
 }
 
-func selectPRsPrompt() ([]PullRequest, error) {
+func selectPRs(interactive bool) ([]PullRequest, error) {
 	args := []string{"pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title"}
 
 	fmt.Println("Args:", args)
@@ -118,6 +120,13 @@ func selectPRsPrompt() ([]PullRequest, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if !interactive {
+		// return the response from the API
+		return prs, nil
+	}
+
+	// because we are in interactive mode, we need to prompt the user to select the PRs to merge
 
 	prOptions := make([]string, len(prs))
 	for i, pr := range prs {
