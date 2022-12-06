@@ -12,3 +12,11 @@ help: build
 .PHONY: fallback
 fallback: build
 	@gh multi-merge-prs
+
+.PHONY: query
+query: build
+	@gh multi-merge-prs --query "author:app/dependabot"
+
+.PHONY: query-interactive
+query-interactive: build
+	@gh multi-merge-prs --query "author:app/dependabot" --interactive
