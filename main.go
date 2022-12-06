@@ -68,6 +68,11 @@ func main() {
 	var passingPRs []PullRequest
 	fmt.Printf("Selected PRs: %v\n", selectedPRs)
 	for _, pr := range selectedPRs {
+		if skipPRCheckFlag {
+			passingPRs = append(passingPRs, pr)
+			continue
+		}
+
 		passing, err := checkPassingChecks(pr)
 		if err != nil {
 			panic(err)
