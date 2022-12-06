@@ -66,9 +66,10 @@ func main() {
 	}
 
 	var passingPRs []PullRequest
-	fmt.Printf("Selected PRs: %v\n", selectedPRs)
+	fmt.Println("Selected PRs:")
 	for _, pr := range selectedPRs {
 		if skipPRCheckFlag {
+			fmt.Printf("%s\n", pr)
 			passingPRs = append(passingPRs, pr)
 			continue
 		}
@@ -79,13 +80,58 @@ func main() {
 		}
 
 		if passing {
+			fmt.Printf("%s\n", pr)
 			passingPRs = append(passingPRs, pr)
 		} else {
 			fmt.Printf("Not all checks are passing for #%d, skipping PR", pr.Number)
 		}
 	}
 
+	// checkout default branch
+	defaultBranch, err := defaultBranch()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("default branch is %s\n", defaultBranch)
+
+	mergeBranchName := "multi-merge-pr-branch"
+
+	err = updateBranch(defaultBranch)
+	if err != nil {
+		panic(err)
+	}
+	err = createBranch(mergeBranchName, defaultBranch)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, pr := range passingPRs {
+		err = checkoutPR(pr)
+		if err != nil {
+			panic(err)
+		}
+		err = mergeBranch(mergeBranchName, "origin/"+pr.HeadRefName)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// merge all PRs into the new branch
+	// send PR to merge the new branch into the default branch
+
 	whoami()
+}
+
+func checkoutPR(pr PullRequest) error {
+	args := []string{"pr", "checkout", fmt.Sprintf("%d", pr.Number)}
+
+	_, stdErr, err := gh.Exec(args...)
+	if err != nil {
+		fmt.Println(stdErr)
+		return err
+	}
+
+	return nil
 }
 
 func checkPassingChecks(pr PullRequest) (bool, error) {
@@ -108,12 +154,23 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 	return true, nil
 }
 
+func defaultBranch() (string, error) {
+	response := struct {
+		DefaultBranch string `json:"default_branch"`
+	}{}
+	err := ghClient.Get("repos/"+currentRepo.Owner()+"/"+currentRepo.Name(), &response)
+	if err != nil {
+		return "", err
+	}
+
+	return response.DefaultBranch, nil
+}
+
 func selectPRs(interactive bool) ([]PullRequest, error) {
 	args := []string{"pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title"}
 
 	fmt.Println("Args:", args)
 
-	fmt.Println("The following PRs will be evaluated for inclusion:")
 	stdOut, stdErr, err := gh.Exec(args...)
 	if err != nil {
 		fmt.Println(stdErr)
