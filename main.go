@@ -140,7 +140,7 @@ func selectPRs(interactive bool) ([]PullRequest, error) {
 
 	var selectedPrs []string
 	survey.AskOne(&survey.MultiSelect{
-		Message: "Select the PRs to combine",
+		Message: "Please select the PRs to combine",
 		Options: prOptions,
 	}, &selectedPrs, survey.WithRemoveSelectAll())
 
