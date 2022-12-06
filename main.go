@@ -108,13 +108,13 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		err = mergeBranch(mergeBranchName, "origin/"+pr.HeadRefName)
+		err = mergeBranch(mergeBranchName, pr.HeadRefName)
 		if err != nil {
-			panic(err)
+			fmt.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, mergeBranchName)
+			continue
 		}
 	}
 
-	// merge all PRs into the new branch
 	// send PR to merge the new branch into the default branch
 
 	whoami()

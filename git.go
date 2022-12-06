@@ -53,7 +53,7 @@ func mergeBranch(branch string, target string) error {
 
 	err = gitExec("merge", target, "--no-edit")
 	if err != nil {
-		fmt.Println(">> unable to merge")
+		fmt.Println(">> unable to merge", err)
 		return gitExec("merge", "--abort")
 	}
 
