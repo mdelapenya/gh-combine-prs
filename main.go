@@ -22,6 +22,10 @@ func main() {
 		os.Exit(0)
 	}
 
+	whoami()
+}
+
+func whoami() {
 	client, err := gh.RESTClient(nil)
 	if err != nil {
 		fmt.Println(err)
