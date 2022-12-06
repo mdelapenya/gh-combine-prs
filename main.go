@@ -63,12 +63,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	var passingPRs []PullRequest
+	var confirmedPRs []PullRequest
 	fmt.Println("Selected PRs:")
 	for _, pr := range selectedPRs {
 		if skipPRCheckFlag {
 			fmt.Printf("%s\n", pr)
-			passingPRs = append(passingPRs, pr)
+			confirmedPRs = append(confirmedPRs, pr)
 			continue
 		}
 
@@ -79,7 +79,7 @@ func main() {
 
 		if passing {
 			fmt.Printf("%s\n", pr)
-			passingPRs = append(passingPRs, pr)
+			confirmedPRs = append(confirmedPRs, pr)
 		} else {
 			fmt.Printf("Not all checks are passing for #%d, skipping PR", pr.Number)
 		}
@@ -103,7 +103,7 @@ func main() {
 		panic(err)
 	}
 
-	for _, pr := range passingPRs {
+	for _, pr := range confirmedPRs {
 		err = checkoutPR(pr)
 		if err != nil {
 			panic(err)
