@@ -36,13 +36,21 @@ func main() {
 	flag.Parse()
 
 	if helpFlag {
-		usage()
+		usage(0)
+	}
+
+	if queryFlag == "" {
+		usage(1, "ERROR: --query is required")
 	}
 
 	whoami()
 }
 
-func usage() {
+func usage(exitCode int, args ...string) {
+	for _, arg := range args {
+		fmt.Fprintln(os.Stderr, arg)
+	}
+
 	fmt.Println(`Usage: gh combine-prs --query "QUERY" [--limit 50] [--selected-pr-numbers 42,13,78] [--skip-pr-check] [--help]
 Arguments:
 	`)
@@ -58,7 +66,7 @@ Arguments:
 	})
 
 	// exit execution after printing usage
-	os.Exit(0)
+	os.Exit(exitCode)
 }
 
 func whoami() {
