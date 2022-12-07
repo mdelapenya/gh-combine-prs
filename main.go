@@ -53,6 +53,13 @@ func init() {
 func main() {
 	flag.Parse()
 
+	if dryRunFlag {
+		// force verbose mode when dry-running
+		verboseFlag = true
+	}
+
+	extensionLogger = newLogger(verboseFlag)
+
 	if helpFlag {
 		usage(0)
 	}
@@ -60,13 +67,6 @@ func main() {
 	if queryFlag == "" {
 		usage(1, "ERROR: --query is required")
 	}
-
-	if dryRunFlag {
-		// force verbose mode when dry-running
-		verboseFlag = true
-	}
-
-	extensionLogger = newLogger(verboseFlag)
 
 	extensionLogger.Println("Dry-run mode:", dryRunFlag)
 
@@ -151,10 +151,10 @@ func defaultBranch() (string, error) {
 
 func usage(exitCode int, args ...string) {
 	for _, arg := range args {
-		extensionLogger.Fprintln(os.Stderr, arg)
+		fmt.Fprintln(os.Stderr, arg)
 	}
 
-	extensionLogger.Println(`Usage: gh multi-merge-prs --query "QUERY" [--limit 50] [--skip-pr-check] [--verbose] [--interactive] [--help]
+	fmt.Println(`Usage: gh multi-merge-prs --query "QUERY" [--limit 50] [--skip-pr-check] [--verbose] [--interactive] [--help]
 Arguments:
 	`)
 	maxLength := 0
@@ -165,7 +165,7 @@ Arguments:
 	})
 	flag.VisitAll(func(f *flag.Flag) {
 		currentLength := len(f.Name)
-		extensionLogger.Fprintf(os.Stderr, "  --%s%s%s\n", f.Name, strings.Repeat(" ", maxLength-currentLength+3), f.Usage)
+		fmt.Fprintf(os.Stderr, "  --%s%s%s\n", f.Name, strings.Repeat(" ", maxLength-currentLength+3), f.Usage)
 	})
 
 	// exit execution after printing usage
