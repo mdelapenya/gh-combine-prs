@@ -24,6 +24,8 @@ var currentRepo repository.Repository
 
 var extensionLogger Logger
 
+const combinedPRsBranchName = "combined-pr-branch"
+
 func init() {
 	flag.BoolVar(&dryRunFlag, "dry-run", false, "If set, will not actually merge the PRs, forcing verbose mode to show internal steps. Defaults to false when not specified")
 	flag.BoolVar(&helpFlag, "help", false, "Show help for multi-merge-prs")
@@ -109,13 +111,11 @@ func main() {
 	}
 	extensionLogger.Printf("default branch is %s\n", defaultBranch)
 
-	mergeBranchName := "multi-merge-pr-branch"
-
 	err = updateBranch(defaultBranch)
 	if err != nil {
 		panic(err)
 	}
-	err = createBranch(mergeBranchName, defaultBranch)
+	err = createBranch(combinedPRsBranchName, defaultBranch)
 	if err != nil {
 		panic(err)
 	}
@@ -125,9 +125,9 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		err = mergeBranch(mergeBranchName, pr.HeadRefName)
+		err = mergeBranch(combinedPRsBranchName, pr.HeadRefName)
 		if err != nil {
-			extensionLogger.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, mergeBranchName)
+			extensionLogger.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, combinedPRsBranchName)
 			continue
 		}
 	}
