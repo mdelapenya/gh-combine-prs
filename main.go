@@ -145,7 +145,7 @@ func usage(exitCode int, args ...string) {
 		extensionLogger.Fprintln(os.Stderr, arg)
 	}
 
-	extensionLogger.Println(`Usage: gh multi-merge-prs --query "QUERY" [--limit 50] [--skip-pr-check] [--help]
+	extensionLogger.Println(`Usage: gh multi-merge-prs --query "QUERY" [--limit 50] [--skip-pr-check] [--verbose] [--interactive] [--help]
 Arguments:
 	`)
 	maxLength := 0
