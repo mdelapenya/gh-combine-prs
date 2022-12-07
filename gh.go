@@ -83,7 +83,7 @@ func ghExec(args ...string) (bytes.Buffer, error) {
 
 	stdOut, stdErr, err := gh.Exec(args...)
 	if err != nil {
-		fmt.Println(stdErr)
+		fmt.Printf(">> error while executing gh: %v. Stderr: %s", err, &stdErr)
 		return bytes.Buffer{}, err
 	}
 
