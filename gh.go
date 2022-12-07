@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -10,11 +11,8 @@ import (
 )
 
 func checkoutPR(pr PullRequest) error {
-	args := []string{"pr", "checkout", fmt.Sprintf("%d", pr.Number)}
-
-	_, stdErr, err := gh.Exec(args...)
+	_, err := ghExec("pr", "checkout", fmt.Sprintf("%d", pr.Number))
 	if err != nil {
-		fmt.Println(stdErr)
 		return err
 	}
 
@@ -22,11 +20,8 @@ func checkoutPR(pr PullRequest) error {
 }
 
 func checkPassingChecks(pr PullRequest) (bool, error) {
-	args := []string{"pr", "checks", fmt.Sprintf("%d", pr.Number)}
-
-	stdOut, stdErr, err := gh.Exec(args...)
+	stdOut, err := ghExec("pr", "checks", fmt.Sprintf("%d", pr.Number))
 	if err != nil {
-		fmt.Println(stdErr)
 		return false, err
 	}
 
@@ -41,14 +36,21 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 	return true, nil
 }
 
-func selectPRs(interactive bool) ([]PullRequest, error) {
-	args := []string{"pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title"}
-
+func ghExec(args ...string) (bytes.Buffer, error) {
 	fmt.Println("Args:", args)
 
 	stdOut, stdErr, err := gh.Exec(args...)
 	if err != nil {
 		fmt.Println(stdErr)
+		return bytes.Buffer{}, err
+	}
+
+	return stdOut, nil
+}
+
+func selectPRs(interactive bool) ([]PullRequest, error) {
+	stdOut, err := ghExec("pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title")
+	if err != nil {
 		return nil, err
 	}
 
