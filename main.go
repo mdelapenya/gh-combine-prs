@@ -16,9 +16,12 @@ var interactiveFlag bool
 var limitFlag int
 var queryFlag string
 var skipPRCheckFlag bool
+var verboseFlag bool
 
 var ghClient api.RESTClient
 var currentRepo repository.Repository
+
+var extensionLogger Logger
 
 func init() {
 	flag.BoolVar(&helpFlag, "help", false, "Show help for multi-merge-prs")
@@ -26,6 +29,7 @@ func init() {
 	flag.IntVar(&limitFlag, "limit", 50, "Sets the maximum number of PRs that will be combined. Defaults to 50")
 	flag.StringVar(&queryFlag, "query", "", `sets the query used to find combinable PRs. e.g. --query "author:app/dependabot to combine Dependabot PRs`)
 	flag.BoolVar(&skipPRCheckFlag, "skip-pr-check", false, `if set, will combine matching PRs even if they are not passing checks. Defaults to false when not specified`)
+	flag.BoolVar(&verboseFlag, "verbose", false, `if set, will print verbose output. Defaults to false when not specified`)
 
 	client, err := gh.RESTClient(nil)
 	if err != nil {
@@ -53,36 +57,39 @@ func main() {
 		usage(1, "ERROR: --query is required")
 	}
 
+	extensionLogger = newLogger(verboseFlag)
+
 	selectedPRs, err := fetchAndSelectPRs(interactiveFlag)
 	if err != nil {
-		fmt.Printf("Error while fetching the PRs. Exiting: %v\n", err)
+		extensionLogger.Printf("Error while fetching the PRs. Exiting: %v\n", err)
 		os.Exit(1)
 	}
 
 	if len(selectedPRs) == 0 {
-		fmt.Println("No PRs selected to merge. Exiting")
+		extensionLogger.Println("No PRs selected to merge. Exiting")
 		os.Exit(0)
 	}
 
 	var confirmedPRs []PullRequest
-	fmt.Println("Selected PRs:")
+	extensionLogger.Println("Selected PRs:")
 	for _, pr := range selectedPRs {
 		if skipPRCheckFlag {
-			fmt.Printf("%s\n", pr)
+			extensionLogger.Printf("%s\n", pr)
 			confirmedPRs = append(confirmedPRs, pr)
 			continue
 		}
 
 		passing, err := checkPassingChecks(pr)
 		if err != nil {
-			panic(err)
+			extensionLogger.Printf("Error while fetching Github checks for #%d, skipping PR: %v\n", pr.Number, err)
+			continue
 		}
 
 		if passing {
-			fmt.Printf("%s\n", pr)
+			extensionLogger.Printf("%s\n", pr)
 			confirmedPRs = append(confirmedPRs, pr)
 		} else {
-			fmt.Printf("Not all checks are passing for #%d, skipping PR", pr.Number)
+			extensionLogger.Printf("Not all checks are passing for #%d, skipping PR", pr.Number)
 		}
 	}
 
@@ -91,7 +98,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("default branch is %s\n", defaultBranch)
+	extensionLogger.Printf("default branch is %s\n", defaultBranch)
 
 	mergeBranchName := "multi-merge-pr-branch"
 
@@ -111,7 +118,7 @@ func main() {
 		}
 		err = mergeBranch(mergeBranchName, pr.HeadRefName)
 		if err != nil {
-			fmt.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, mergeBranchName)
+			extensionLogger.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, mergeBranchName)
 			continue
 		}
 	}
@@ -135,10 +142,10 @@ func defaultBranch() (string, error) {
 
 func usage(exitCode int, args ...string) {
 	for _, arg := range args {
-		fmt.Fprintln(os.Stderr, arg)
+		extensionLogger.Fprintln(os.Stderr, arg)
 	}
 
-	fmt.Println(`Usage: gh multi-merge-prs --query "QUERY" [--limit 50] [--skip-pr-check] [--help]
+	extensionLogger.Println(`Usage: gh multi-merge-prs --query "QUERY" [--limit 50] [--skip-pr-check] [--help]
 Arguments:
 	`)
 	maxLength := 0
@@ -149,7 +156,7 @@ Arguments:
 	})
 	flag.VisitAll(func(f *flag.Flag) {
 		currentLength := len(f.Name)
-		fmt.Fprintf(os.Stderr, "  --%s%s%s\n", f.Name, strings.Repeat(" ", maxLength-currentLength+3), f.Usage)
+		extensionLogger.Fprintf(os.Stderr, "  --%s%s%s\n", f.Name, strings.Repeat(" ", maxLength-currentLength+3), f.Usage)
 	})
 
 	// exit execution after printing usage
@@ -160,10 +167,10 @@ func whoami() {
 	response := struct{ Login string }{}
 	err := ghClient.Get("user", &response)
 	if err != nil {
-		fmt.Println(err)
+		extensionLogger.Println(err)
 		return
 	}
-	fmt.Printf("running as %s\n", response.Login)
+	extensionLogger.Printf("running as %s\n", response.Login)
 }
 
 // For more examples of using go-gh, see:

@@ -79,11 +79,11 @@ func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
 }
 
 func ghExec(args ...string) (bytes.Buffer, error) {
-	fmt.Println("Args:", args)
+	extensionLogger.Println("Args:", args)
 
 	stdOut, stdErr, err := gh.Exec(args...)
 	if err != nil {
-		fmt.Printf(">> error while executing gh: %v. Stderr: %s", err, &stdErr)
+		extensionLogger.Printf(">> error while executing gh: %v. Stderr: %s", err, &stdErr)
 		return bytes.Buffer{}, err
 	}
 

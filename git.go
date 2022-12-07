@@ -1,26 +1,25 @@
 package main
 
 import (
-	"fmt"
 	"os/exec"
 )
 
 func checkoutBranch(branch string) error {
-	fmt.Println("Checking out branch", branch)
+	extensionLogger.Println("Checking out branch", branch)
 	err := gitExec("checkout", branch)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Branch", branch, "checked out")
+	extensionLogger.Println("Branch", branch, "checked out")
 	return nil
 }
 
 func createBranch(name string, base string) error {
-	fmt.Println("Creating branch", name, "from", base)
+	extensionLogger.Println("Creating branch", name, "from", base)
 	err := deleteBranch(name)
 	if err != nil {
-		fmt.Printf(">> failed to delete branch, ignoring: %s\n", err)
+		extensionLogger.Printf(">> failed to delete branch, ignoring: %s\n", err)
 	}
 
 	err = gitExec("checkout", "-b", name, base)
@@ -28,23 +27,23 @@ func createBranch(name string, base string) error {
 		return err
 	}
 
-	fmt.Println("Branch", name, "created from", base)
+	extensionLogger.Println("Branch", name, "created from", base)
 	return nil
 }
 
 func deleteBranch(branch string) error {
-	fmt.Println("Deleting branch", branch)
+	extensionLogger.Println("Deleting branch", branch)
 	err := gitExec("branch", "-D", branch)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Branch", branch, "deleted")
+	extensionLogger.Println("Branch", branch, "deleted")
 	return nil
 }
 
 func mergeBranch(branch string, target string) error {
-	fmt.Println("Merging branch ", target, "into", branch)
+	extensionLogger.Println("Merging branch ", target, "into", branch)
 
 	err := checkoutBranch(branch)
 	if err != nil {
@@ -53,16 +52,16 @@ func mergeBranch(branch string, target string) error {
 
 	err = gitExec("merge", target, "--no-edit")
 	if err != nil {
-		fmt.Println(">> unable to merge", err)
+		extensionLogger.Println(">> unable to merge", err)
 		return gitExec("merge", "--abort")
 	}
 
-	fmt.Println("Branch", target, "merged into", branch)
+	extensionLogger.Println("Branch", target, "merged into", branch)
 	return nil
 }
 
 func updateBranch(branch string) error {
-	fmt.Println("Updating branch ", branch)
+	extensionLogger.Println("Updating branch ", branch)
 
 	err := checkoutBranch(branch)
 	if err != nil {
@@ -71,19 +70,19 @@ func updateBranch(branch string) error {
 
 	err = gitExec("pull", "origin", branch, "--ff-only")
 	if err != nil {
-		fmt.Printf(">> failed to pull from origin, trying upstream: %s\n", err)
+		extensionLogger.Printf(">> failed to pull from origin, trying upstream: %s\n", err)
 		err = gitExec("pull", "upstream", branch, "--ff-only")
 		if err != nil {
 			return err
 		}
 	}
 
-	fmt.Println("Branch", branch, "updated")
+	extensionLogger.Println("Branch", branch, "updated")
 	return nil
 }
 
 func gitExec(args ...string) error {
-	fmt.Printf("Executing git %s\n", args)
+	extensionLogger.Printf("Executing git %s\n", args)
 	cmd := exec.Command("git", args...)
 	_, err := cmd.Output()
 	if err != nil {
