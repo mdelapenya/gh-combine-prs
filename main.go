@@ -53,9 +53,10 @@ func main() {
 		usage(1, "ERROR: --query is required")
 	}
 
-	selectedPRs, err := selectPRs(interactiveFlag)
+	selectedPRs, err := fetchAndSelectPRs(interactiveFlag)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Error while fetching the PRs. Exiting: %v\n", err)
+		os.Exit(1)
 	}
 
 	if len(selectedPRs) == 0 {

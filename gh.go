@@ -36,19 +36,7 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 	return true, nil
 }
 
-func ghExec(args ...string) (bytes.Buffer, error) {
-	fmt.Println("Args:", args)
-
-	stdOut, stdErr, err := gh.Exec(args...)
-	if err != nil {
-		fmt.Println(stdErr)
-		return bytes.Buffer{}, err
-	}
-
-	return stdOut, nil
-}
-
-func selectPRs(interactive bool) ([]PullRequest, error) {
+func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
 	stdOut, err := ghExec("pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title")
 	if err != nil {
 		return nil, err
@@ -88,4 +76,16 @@ func selectPRs(interactive bool) ([]PullRequest, error) {
 	}
 
 	return result, nil
+}
+
+func ghExec(args ...string) (bytes.Buffer, error) {
+	fmt.Println("Args:", args)
+
+	stdOut, stdErr, err := gh.Exec(args...)
+	if err != nil {
+		fmt.Println(stdErr)
+		return bytes.Buffer{}, err
+	}
+
+	return stdOut, nil
 }
