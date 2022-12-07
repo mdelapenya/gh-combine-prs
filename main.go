@@ -11,6 +11,7 @@ import (
 	"github.com/cli/go-gh/pkg/repository"
 )
 
+var dryRunFlag bool
 var helpFlag bool
 var interactiveFlag bool
 var limitFlag int
@@ -24,6 +25,7 @@ var currentRepo repository.Repository
 var extensionLogger Logger
 
 func init() {
+	flag.BoolVar(&dryRunFlag, "dry-run", false, "If set, will not actually merge the PRs, forcing verbose mode to show internal steps. Defaults to false when not specified")
 	flag.BoolVar(&helpFlag, "help", false, "Show help for multi-merge-prs")
 	flag.BoolVar(&interactiveFlag, "interactive", false, "Enable interactive mode. If set, will prompt for selecting the PRs to merge")
 	flag.IntVar(&limitFlag, "limit", 50, "Sets the maximum number of PRs that will be combined. Defaults to 50")
@@ -57,7 +59,14 @@ func main() {
 		usage(1, "ERROR: --query is required")
 	}
 
+	if dryRunFlag {
+		// force verbose mode when dry-running
+		verboseFlag = true
+	}
+
 	extensionLogger = newLogger(verboseFlag)
+
+	extensionLogger.Println("Dry-run mode:", dryRunFlag)
 
 	selectedPRs, err := fetchAndSelectPRs(interactiveFlag)
 	if err != nil {

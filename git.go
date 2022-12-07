@@ -83,10 +83,14 @@ func updateBranch(branch string) error {
 
 func gitExec(args ...string) error {
 	extensionLogger.Printf("Executing git %s\n", args)
-	cmd := exec.Command("git", args...)
-	_, err := cmd.Output()
-	if err != nil {
-		return err
+
+	if !dryRunFlag {
+		cmd := exec.Command("git", args...)
+		_, err := cmd.Output()
+		if err != nil {
+			return err
+		}
 	}
+
 	return nil
 }

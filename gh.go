@@ -11,15 +11,21 @@ import (
 )
 
 func checkoutPR(pr PullRequest) error {
-	_, err := ghExec("pr", "checkout", fmt.Sprintf("%d", pr.Number))
-	if err != nil {
-		return err
+	extensionLogger.Printf("Checking out #%d\n", pr.Number)
+
+	if !dryRunFlag {
+		_, err := ghExec("pr", "checkout", fmt.Sprintf("%d", pr.Number))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
 func checkPassingChecks(pr PullRequest) (bool, error) {
+	extensionLogger.Printf("Checking if #%d is passing Github checks\n", pr.Number)
+
 	stdOut, err := ghExec("pr", "checks", fmt.Sprintf("%d", pr.Number))
 	if err != nil {
 		return false, err
@@ -37,6 +43,8 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 }
 
 func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
+	extensionLogger.Printf("Fetching pull rquests using query: %s\n", queryFlag)
+
 	stdOut, err := ghExec("pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title")
 	if err != nil {
 		return nil, err
