@@ -45,7 +45,7 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
 	extensionLogger.Printf("Fetching pull rquests using query: %s\n", queryFlag)
 
-	stdOut, err := ghExec("pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title")
+	stdOut, err := ghExec("pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title,url")
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +87,7 @@ func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
 }
 
 func ghExec(args ...string) (bytes.Buffer, error) {
+	args = append(args, "--repo", "testcontainers/testcontainers-go") // for testing purposes
 	extensionLogger.Println("Args:", args)
 
 	stdOut, stdErr, err := gh.Exec(args...)
