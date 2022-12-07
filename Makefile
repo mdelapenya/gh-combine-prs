@@ -7,16 +7,16 @@ build:
 
 .PHONY: help
 help: build
-	@gh multi-merge-prs --help
+	@gh combine-prs --help
 
 .PHONY: fallback
 fallback: build
-	@gh multi-merge-prs
+	@gh combine-prs
 
 .PHONY: query
 query: build
-	@gh multi-merge-prs --query "author:app/dependabot"
+	@gh combine-prs --query "author:app/dependabot"
 
 .PHONY: query-interactive
 query-interactive: build
-	@gh multi-merge-prs --query "author:app/dependabot" --interactive
+	@gh combine-prs --query "author:app/dependabot" --interactive
