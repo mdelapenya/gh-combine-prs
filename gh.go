@@ -42,6 +42,38 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 	return true, nil
 }
 
+func checkIfCreatePR(body string) error {
+	create := false
+	prompt := &survey.Confirm{
+		Message: "Do you want to submit the combined PR?",
+	}
+	survey.AskOne(prompt, &create)
+
+	const defaultPRTitle = "Combined dependencies PR"
+
+	extensionLogger.Printf("Creating combined PR with body:\n%s\n", body)
+
+	prTitle := ""
+	titlePrompt := &survey.Input{
+		Message: "Do you want to change the PR title?",
+		Default: defaultPRTitle,
+	}
+	survey.AskOne(titlePrompt, &prTitle)
+
+	if create {
+		extensionLogger.Printf("Creating combined PR: \n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", prTitle, body)
+
+		if !dryRunFlag {
+			_, err := ghExec("pr", "create", "--title", prTitle, "--body", body, "--label", "dependencies")
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
 	extensionLogger.Printf("Fetching pull rquests using query: %s\n", queryFlag)
 
@@ -96,4 +128,15 @@ func ghExec(args ...string) (bytes.Buffer, error) {
 	}
 
 	return stdOut, nil
+}
+
+func viewPR(pr PullRequest) (string, error) {
+	extensionLogger.Printf("Viewing #%d\n", pr.Number)
+
+	stdOut, err := ghExec("pr", "view", fmt.Sprintf("%d", pr.Number), "--json", "title,author,number", "--template", "{{.title}} (#{{.number}}) @{{.author.login}}")
+	if err != nil {
+		return "", err
+	}
+
+	return stdOut.String(), nil
 }

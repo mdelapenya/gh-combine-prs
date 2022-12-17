@@ -120,6 +120,8 @@ func main() {
 		panic(err)
 	}
 
+	body := "This PR combines the following PRs:\n\n"
+
 	for _, pr := range confirmedPRs {
 		err = checkoutPR(pr)
 		if err != nil {
@@ -130,9 +132,18 @@ func main() {
 			extensionLogger.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, combinedPRsBranchName)
 			continue
 		}
+
+		prDescription, err := viewPR(pr)
+		if err != nil {
+			panic(err)
+		}
+		body += fmt.Sprintf("- %s\n", prDescription)
 	}
 
-	// send PR to merge the new branch into the default branch
+	err = checkIfCreatePR(body)
+	if err != nil {
+		panic(err)
+	}
 
 	whoami()
 }
