@@ -87,7 +87,6 @@ func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
 }
 
 func ghExec(args ...string) (bytes.Buffer, error) {
-	args = append(args, "--repo", "testcontainers/testcontainers-go") // for testing purposes
 	extensionLogger.Println("Args:", args)
 
 	stdOut, stdErr, err := gh.Exec(args...)
