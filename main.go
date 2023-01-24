@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"hash/fnv"
 	"os"
 	"strings"
 
@@ -115,7 +116,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = createBranch(combinedPRsBranchName, defaultBranch)
+
+	branchName := fmt.Sprintf("%s-%s", combinedPRsBranchName, titlesHash(confirmedPRs))
+
+	err = createBranch(branchName, defaultBranch)
 	if err != nil {
 		panic(err)
 	}
@@ -127,9 +131,9 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		err = mergeBranch(combinedPRsBranchName, pr.HeadRefName)
+		err = mergeBranch(branchName, pr.HeadRefName)
 		if err != nil {
-			extensionLogger.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, combinedPRsBranchName)
+			extensionLogger.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, branchName)
 			continue
 		}
 
@@ -158,6 +162,24 @@ func defaultBranch() (string, error) {
 	}
 
 	return response.DefaultBranch, nil
+}
+
+// titlesHash returns a hash of the PR titles
+func titlesHash(prs []PullRequest) string {
+	var titles []string
+	for _, pr := range prs {
+		titles = append(titles, pr.Title)
+	}
+
+	decoded := strings.Join(titles, "-")
+
+	h := fnv.New32a()
+	_, err := h.Write([]byte(decoded))
+	if err != nil {
+		panic(err)
+	}
+
+	return fmt.Sprintf("%d", h.Sum32())
 }
 
 func usage(exitCode int, args ...string) {
