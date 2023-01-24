@@ -42,7 +42,7 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 	return true, nil
 }
 
-func checkIfCreatePR(body string) error {
+func checkIfCreatePR(branch string, body string) error {
 	create := false
 	prompt := &survey.Confirm{
 		Message: "Do you want to submit the combined PR?",
@@ -61,7 +61,12 @@ func checkIfCreatePR(body string) error {
 	survey.AskOne(titlePrompt, &prTitle)
 
 	if create {
-		extensionLogger.Printf("Creating combined PR: \n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", prTitle, body)
+		err := pushBranch(branch)
+		if err != nil {
+			return err
+		}
+
+		extensionLogger.Printf("Creating combined PR: \n - Head branch: %s\n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", branch, prTitle, body)
 
 		if !dryRunFlag {
 			_, err := ghExec("pr", "create", "--title", prTitle, "--body", body, "--label", "dependencies")

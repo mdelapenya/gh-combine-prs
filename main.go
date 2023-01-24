@@ -144,7 +144,7 @@ func main() {
 		body += fmt.Sprintf("- %s\n", prDescription)
 	}
 
-	err = checkIfCreatePR(body)
+	err = checkIfCreatePR(branchName, body)
 	if err != nil {
 		panic(err)
 	}

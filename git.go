@@ -60,6 +60,19 @@ func mergeBranch(branch string, target string) error {
 	return nil
 }
 
+func pushBranch(branch string) error {
+	extensionLogger.Println("Pushing branch ", branch)
+
+	err := gitExec("push", "origin", branch)
+	if err != nil {
+		extensionLogger.Println(">> unable to push", err)
+		return err
+	}
+
+	extensionLogger.Println("Branch", branch, "pushed to origin")
+	return nil
+}
+
 func updateBranch(branch string) error {
 	extensionLogger.Println("Updating branch ", branch)
 
