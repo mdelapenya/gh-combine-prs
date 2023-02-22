@@ -125,6 +125,7 @@ func main() {
 	}
 
 	body := "This PR combines the following PRs:\n\n"
+	relatedIssuesText := "## Related Issues:\n\n"
 
 	for _, pr := range confirmedPRs {
 		err = checkoutPR(pr)
@@ -137,11 +138,16 @@ func main() {
 			continue
 		}
 
+		relatedIssuesText += fmt.Sprintf("- Closes #%d\n", pr.Number)
 		prDescription, err := viewPR(pr)
 		if err != nil {
 			panic(err)
 		}
 		body += fmt.Sprintf("- %s\n", prDescription)
+	}
+
+	if len(confirmedPRs) > 0 {
+		body += "\n" + relatedIssuesText
 	}
 
 	err = checkIfCreatePR(branchName, body)
