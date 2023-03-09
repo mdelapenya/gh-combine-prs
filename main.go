@@ -84,6 +84,7 @@ func main() {
 
 	var confirmedPRs []PullRequest
 	extensionLogger.Debugf("Selected PRs:")
+	var errors []error
 	for _, pr := range selectedPRs {
 		if skipPRCheckFlag {
 			extensionLogger.Debugf("%s\n", pr)
@@ -94,6 +95,7 @@ func main() {
 		passing, err := checkPassingChecks(pr)
 		if err != nil {
 			extensionLogger.Warnf("while fetching Github checks for #%d, skipping PR: %v\n", pr.Number, err)
+			errors = append(errors, err)
 			continue
 		}
 
@@ -103,6 +105,11 @@ func main() {
 		} else {
 			extensionLogger.Infof("Not all checks are passing for #%d, skipping PR", pr.Number)
 		}
+	}
+
+	if len(errors) == len(selectedPRs) {
+		extensionLogger.Errorf("All PRs failed to pass checks. Exiting")
+		os.Exit(1)
 	}
 
 	// checkout default branch
