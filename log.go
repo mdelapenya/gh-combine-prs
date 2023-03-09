@@ -44,9 +44,6 @@ func (l logger) Errorf(format string, v ...interface{}) {
 
 // Infof prints a formatted info message
 func (l logger) Infof(format string, v ...interface{}) {
-	if !l.Verbose {
-		return
-	}
 	color.Green(format, v...)
 }
 
