@@ -73,7 +73,7 @@ func main() {
 
 	selectedPRs, err := fetchAndSelectPRs(interactiveFlag)
 	if err != nil {
-		extensionLogger.Printf("Error while fetching the PRs. Exiting: %v\n", err)
+		extensionLogger.Errorf("while fetching the PRs. Exiting: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -93,7 +93,7 @@ func main() {
 
 		passing, err := checkPassingChecks(pr)
 		if err != nil {
-			extensionLogger.Printf("Error while fetching Github checks for #%d, skipping PR: %v\n", pr.Number, err)
+			extensionLogger.Errorf("while fetching Github checks for #%d, skipping PR: %v\n", pr.Number, err)
 			continue
 		}
 
@@ -134,7 +134,7 @@ func main() {
 		}
 		err = mergeBranch(branchName, pr.HeadRefName)
 		if err != nil {
-			extensionLogger.Printf(">> Pull request #%d failed to merge into %s. Skipping PR\n", pr.Number, branchName)
+			extensionLogger.Errorf("pull request #%d failed to merge into %s: %v. Skipping PR\n", pr.Number, branchName, err)
 			continue
 		}
 

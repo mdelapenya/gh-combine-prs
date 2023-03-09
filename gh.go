@@ -134,7 +134,7 @@ func ghExec(args ...string) (bytes.Buffer, error) {
 
 	stdOut, stdErr, err := gh.Exec(args...)
 	if err != nil {
-		extensionLogger.Printf(">> error while executing gh: %v. Stderr: %s", err, &stdErr)
+		extensionLogger.Errorf("while executing gh: %v. Stderr: %s", err, &stdErr)
 		return bytes.Buffer{}, err
 	}
 

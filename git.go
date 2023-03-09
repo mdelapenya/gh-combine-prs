@@ -19,7 +19,7 @@ func createBranch(name string, base string) error {
 	extensionLogger.Println("Creating branch", name, "from", base)
 	err := deleteBranch(name)
 	if err != nil {
-		extensionLogger.Printf(">> failed to delete branch, ignoring: %s\n", err)
+		extensionLogger.Errorf("failed to delete branch, ignoring: %s\n", err)
 	}
 
 	err = gitExec("checkout", "-b", name, base)
@@ -83,7 +83,7 @@ func updateBranch(branch string) error {
 
 	err = gitExec("pull", "origin", branch, "--ff-only")
 	if err != nil {
-		extensionLogger.Printf(">> failed to pull from origin, trying upstream: %s\n", err)
+		extensionLogger.Errorf("failed to pull from origin, trying upstream: %s\n", err)
 		err = gitExec("pull", "upstream", branch, "--ff-only")
 		if err != nil {
 			return err
