@@ -69,6 +69,8 @@ func main() {
 		usage(1, "ERROR: --query is required")
 	}
 
+	whoami()
+
 	extensionLogger.Debugf("Dry-run mode: %t\n", dryRunFlag)
 
 	selectedPRs, err := fetchAndSelectPRs(interactiveFlag)
@@ -161,8 +163,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	whoami()
 }
 
 func defaultBranch() (string, error) {
@@ -225,7 +225,7 @@ func whoami() {
 		extensionLogger.Errorf("%v", err)
 		return
 	}
-	extensionLogger.Debugf("running as %s\n", response.Login)
+	extensionLogger.Debugf("Running as %s\n", response.Login)
 }
 
 // For more examples of using go-gh, see:
