@@ -52,7 +52,7 @@ func checkIfCreatePR(branch string, body string) error {
 
 	const defaultPRTitle = "Combined dependencies PR"
 
-	extensionLogger.Debugf("Creating combined PR with body:\n%s\n", body)
+	extensionLogger.Infof("Creating combined PR with body:\n%s\n", body)
 
 	prTitle := ""
 	titlePrompt := &survey.Input{

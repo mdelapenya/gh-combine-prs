@@ -11,7 +11,7 @@ func checkoutBranch(branch string) error {
 		return err
 	}
 
-	extensionLogger.Debugf("Branch %s checked out\n", branch)
+	extensionLogger.Infof("Branch %s checked out\n", branch)
 	return nil
 }
 
@@ -27,7 +27,7 @@ func createBranch(name string, base string) error {
 		return err
 	}
 
-	extensionLogger.Debugf("Branch %s created from %s\n", name, base)
+	extensionLogger.Infof("Branch %s created from %s\n", name, base)
 	return nil
 }
 
@@ -38,7 +38,7 @@ func deleteBranch(branch string) error {
 		return err
 	}
 
-	extensionLogger.Debugf("Branch %s deleted\n", branch)
+	extensionLogger.Infof("Branch %s deleted\n", branch)
 	return nil
 }
 
@@ -56,7 +56,7 @@ func mergeBranch(branch string, target string) error {
 		return gitExec("merge", "--abort")
 	}
 
-	extensionLogger.Debugf("Branch %s merged into %s\n", target, branch)
+	extensionLogger.Infof("Branch %s merged into %s\n", target, branch)
 	return nil
 }
 
@@ -69,7 +69,7 @@ func pushBranch(branch string) error {
 		return err
 	}
 
-	extensionLogger.Debugf("Branch %s pushed to origin", branch)
+	extensionLogger.Infof("Branch %s pushed to origin", branch)
 	return nil
 }
 
@@ -90,7 +90,7 @@ func updateBranch(branch string) error {
 		}
 	}
 
-	extensionLogger.Debugf("Branch %s updated\n")
+	extensionLogger.Infof("Branch %s updated\n", branch)
 	return nil
 }
 
