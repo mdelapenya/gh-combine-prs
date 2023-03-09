@@ -80,7 +80,7 @@ func checkIfCreatePR(branch string, body string) error {
 }
 
 func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
-	extensionLogger.Printf("Fetching pull rquests using query: %s\n", queryFlag)
+	extensionLogger.Printf("Fetching pull requests using query: %s\n", queryFlag)
 
 	stdOut, err := ghExec("pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title,url")
 	if err != nil {
