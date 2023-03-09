@@ -103,7 +103,7 @@ func main() {
 			extensionLogger.Debugf("%s\n", pr)
 			confirmedPRs = append(confirmedPRs, pr)
 		} else {
-			extensionLogger.Infof("Not all checks are passing for #%d, skipping PR", pr.Number)
+			extensionLogger.Warnf("Not all checks are passing for #%d, skipping PR", pr.Number)
 		}
 	}
 
