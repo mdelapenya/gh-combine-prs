@@ -69,7 +69,7 @@ func main() {
 		usage(1, "ERROR: --query is required")
 	}
 
-	extensionLogger.Println("Dry-run mode:", dryRunFlag)
+	extensionLogger.Debugf("Dry-run mode: %t\n", dryRunFlag)
 
 	selectedPRs, err := fetchAndSelectPRs(interactiveFlag)
 	if err != nil {
@@ -78,30 +78,30 @@ func main() {
 	}
 
 	if len(selectedPRs) == 0 {
-		extensionLogger.Println("No PRs selected to merge. Exiting")
+		extensionLogger.Warnf("No PRs selected to merge. Exiting")
 		os.Exit(0)
 	}
 
 	var confirmedPRs []PullRequest
-	extensionLogger.Println("Selected PRs:")
+	extensionLogger.Debugf("Selected PRs:")
 	for _, pr := range selectedPRs {
 		if skipPRCheckFlag {
-			extensionLogger.Printf("%s\n", pr)
+			extensionLogger.Debugf("%s\n", pr)
 			confirmedPRs = append(confirmedPRs, pr)
 			continue
 		}
 
 		passing, err := checkPassingChecks(pr)
 		if err != nil {
-			extensionLogger.Errorf("while fetching Github checks for #%d, skipping PR: %v\n", pr.Number, err)
+			extensionLogger.Warnf("while fetching Github checks for #%d, skipping PR: %v\n", pr.Number, err)
 			continue
 		}
 
 		if passing {
-			extensionLogger.Printf("%s\n", pr)
+			extensionLogger.Debugf("%s\n", pr)
 			confirmedPRs = append(confirmedPRs, pr)
 		} else {
-			extensionLogger.Printf("Not all checks are passing for #%d, skipping PR", pr.Number)
+			extensionLogger.Infof("Not all checks are passing for #%d, skipping PR", pr.Number)
 		}
 	}
 
@@ -110,7 +110,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	extensionLogger.Printf("default branch is %s\n", defaultBranch)
+	extensionLogger.Debugf("default branch is %s\n", defaultBranch)
 
 	err = updateBranch(defaultBranch)
 	if err != nil {
@@ -134,7 +134,7 @@ func main() {
 		}
 		err = mergeBranch(branchName, pr.HeadRefName)
 		if err != nil {
-			extensionLogger.Errorf("pull request #%d failed to merge into %s: %v. Skipping PR\n", pr.Number, branchName, err)
+			extensionLogger.Warnf("pull request #%d failed to merge into %s: %v. Skipping PR\n", pr.Number, branchName, err)
 			continue
 		}
 
@@ -215,10 +215,10 @@ func whoami() {
 	response := struct{ Login string }{}
 	err := ghClient.Get("user", &response)
 	if err != nil {
-		extensionLogger.Println(err)
+		extensionLogger.Errorf("%v", err)
 		return
 	}
-	extensionLogger.Printf("running as %s\n", response.Login)
+	extensionLogger.Debugf("running as %s\n", response.Login)
 }
 
 // For more examples of using go-gh, see:

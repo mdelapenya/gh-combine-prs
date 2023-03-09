@@ -5,18 +5,18 @@ import (
 )
 
 func checkoutBranch(branch string) error {
-	extensionLogger.Println("Checking out branch", branch)
+	extensionLogger.Debugf("Checking out branch %s\n", branch)
 	err := gitExec("checkout", branch)
 	if err != nil {
 		return err
 	}
 
-	extensionLogger.Println("Branch", branch, "checked out")
+	extensionLogger.Debugf("Branch %s checked out\n", branch)
 	return nil
 }
 
 func createBranch(name string, base string) error {
-	extensionLogger.Println("Creating branch", name, "from", base)
+	extensionLogger.Debugf("Creating branch %s from %s\n", name, base)
 	err := deleteBranch(name)
 	if err != nil {
 		extensionLogger.Errorf("failed to delete branch, ignoring: %s\n", err)
@@ -27,23 +27,23 @@ func createBranch(name string, base string) error {
 		return err
 	}
 
-	extensionLogger.Println("Branch", name, "created from", base)
+	extensionLogger.Debugf("Branch %s created from %s\n", name, base)
 	return nil
 }
 
 func deleteBranch(branch string) error {
-	extensionLogger.Println("Deleting branch", branch)
+	extensionLogger.Debugf("Deleting branch %s\n", branch)
 	err := gitExec("branch", "-D", branch)
 	if err != nil {
 		return err
 	}
 
-	extensionLogger.Println("Branch", branch, "deleted")
+	extensionLogger.Debugf("Branch %s deleted\n", branch)
 	return nil
 }
 
 func mergeBranch(branch string, target string) error {
-	extensionLogger.Println("Merging branch ", target, "into", branch)
+	extensionLogger.Debugf("Merging branch  %s into %s\n", target, branch)
 
 	err := checkoutBranch(branch)
 	if err != nil {
@@ -52,29 +52,29 @@ func mergeBranch(branch string, target string) error {
 
 	err = gitExec("merge", target, "--no-edit")
 	if err != nil {
-		extensionLogger.Println(">> unable to merge", err)
+		extensionLogger.Errorf("unable to merge: %v", err)
 		return gitExec("merge", "--abort")
 	}
 
-	extensionLogger.Println("Branch", target, "merged into", branch)
+	extensionLogger.Debugf("Branch %s merged into %s\n", target, branch)
 	return nil
 }
 
 func pushBranch(branch string) error {
-	extensionLogger.Println("Pushing branch ", branch)
+	extensionLogger.Debugf("Pushing branch %s\n", branch)
 
 	err := gitExec("push", "origin", branch)
 	if err != nil {
-		extensionLogger.Println(">> unable to push", err)
+		extensionLogger.Errorf("unable to push: %v", err)
 		return err
 	}
 
-	extensionLogger.Println("Branch", branch, "pushed to origin")
+	extensionLogger.Debugf("Branch %s pushed to origin", branch)
 	return nil
 }
 
 func updateBranch(branch string) error {
-	extensionLogger.Println("Updating branch ", branch)
+	extensionLogger.Debugf("Updating branch %s\n", branch)
 
 	err := checkoutBranch(branch)
 	if err != nil {
@@ -90,12 +90,12 @@ func updateBranch(branch string) error {
 		}
 	}
 
-	extensionLogger.Println("Branch", branch, "updated")
+	extensionLogger.Debugf("Branch %s updated\n")
 	return nil
 }
 
 func gitExec(args ...string) error {
-	extensionLogger.Printf("Executing git %s\n", args)
+	extensionLogger.Debugf("Executing git %s\n", args)
 
 	if !dryRunFlag {
 		cmd := exec.Command("git", args...)

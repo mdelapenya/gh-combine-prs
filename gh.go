@@ -12,7 +12,7 @@ import (
 )
 
 func checkoutPR(pr PullRequest) error {
-	extensionLogger.Printf("Checking out #%d\n", pr.Number)
+	extensionLogger.Debugf("Checking out #%d\n", pr.Number)
 
 	if !dryRunFlag {
 		_, err := ghExec("pr", "checkout", fmt.Sprintf("%d", pr.Number))
@@ -25,7 +25,7 @@ func checkoutPR(pr PullRequest) error {
 }
 
 func checkPassingChecks(pr PullRequest) (bool, error) {
-	extensionLogger.Printf("Checking if #%d is passing Github checks\n", pr.Number)
+	extensionLogger.Debugf("Checking if #%d is passing Github checks\n", pr.Number)
 
 	stdOut, err := ghExec("pr", "checks", fmt.Sprintf("%d", pr.Number))
 	if err != nil {
@@ -52,7 +52,7 @@ func checkIfCreatePR(branch string, body string) error {
 
 	const defaultPRTitle = "Combined dependencies PR"
 
-	extensionLogger.Printf("Creating combined PR with body:\n%s\n", body)
+	extensionLogger.Debugf("Creating combined PR with body:\n%s\n", body)
 
 	prTitle := ""
 	titlePrompt := &survey.Input{
@@ -67,7 +67,7 @@ func checkIfCreatePR(branch string, body string) error {
 			return err
 		}
 
-		extensionLogger.Printf("Creating combined PR: \n - Head branch: %s\n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", branch, prTitle, body)
+		extensionLogger.Debugf("Creating combined PR: \n - Head branch: %s\n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", branch, prTitle, body)
 
 		if !dryRunFlag {
 			_, err := ghExec("pr", "create", "--title", prTitle, "--body", body, "--label", "dependencies")
@@ -81,7 +81,7 @@ func checkIfCreatePR(branch string, body string) error {
 }
 
 func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
-	extensionLogger.Printf("Fetching pull requests using query: %s\n", queryFlag)
+	extensionLogger.Debugf("Fetching pull requests using query: %s\n", queryFlag)
 
 	stdOut, err := ghExec("pr", "list", "--search", queryFlag, "--limit", fmt.Sprintf("%d", limitFlag), "--json", "number,headRefName,title,url")
 	if err != nil {
@@ -130,7 +130,7 @@ func ghExec(args ...string) (bytes.Buffer, error) {
 		args = append(args, "--repo", repoOverride) // for testing purposes
 	}
 
-	extensionLogger.Println("Args:", args)
+	extensionLogger.Debugf("Args: %v\n", args)
 
 	stdOut, stdErr, err := gh.Exec(args...)
 	if err != nil {
@@ -142,7 +142,7 @@ func ghExec(args ...string) (bytes.Buffer, error) {
 }
 
 func viewPR(pr PullRequest) (string, error) {
-	extensionLogger.Printf("Viewing #%d\n", pr.Number)
+	extensionLogger.Debugf("Viewing #%d\n", pr.Number)
 
 	stdOut, err := ghExec("pr", "view", fmt.Sprintf("%d", pr.Number), "--json", "title,author,number", "--template", "{{.title}} (#{{.number}}) @{{.author.login}}")
 	if err != nil {
