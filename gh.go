@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	survey "github.com/AlecAivazis/survey/v2"
@@ -124,6 +125,11 @@ func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
 }
 
 func ghExec(args ...string) (bytes.Buffer, error) {
+	repoOverride := os.Getenv("GH_REPO")
+	if repoOverride != "" {
+		args = append(args, "--repo", repoOverride) // for testing purposes
+	}
+
 	extensionLogger.Println("Args:", args)
 
 	stdOut, stdErr, err := gh.Exec(args...)
