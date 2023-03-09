@@ -52,8 +52,6 @@ func checkIfCreatePR(branch string, body string) error {
 
 	const defaultPRTitle = "Combined dependencies PR"
 
-	extensionLogger.Infof("Creating combined PR with body:\n%s\n", body)
-
 	prTitle := ""
 	titlePrompt := &survey.Input{
 		Message: "Do you want to change the PR title?",
@@ -67,7 +65,8 @@ func checkIfCreatePR(branch string, body string) error {
 			return err
 		}
 
-		extensionLogger.Debugf("Creating combined PR: \n - Head branch: %s\n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", branch, prTitle, body)
+		extensionLogger.Infof("Creating combined PR:")
+		extensionLogger.Printf("- Head branch: %s\n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", branch, prTitle, body)
 
 		if !dryRunFlag {
 			_, err := ghExec("pr", "create", "--title", prTitle, "--body", body, "--label", "dependencies")
