@@ -12,6 +12,7 @@ type Logger interface {
 	Debugf(format string, v ...interface{})
 	Errorf(format string, v ...interface{})
 	Infof(format string, v ...interface{})
+	Successf(format string, v ...interface{})
 	Warnf(format string, v ...interface{})
 	Fprintf(w io.Writer, format string, v ...interface{}) (int, error)
 	Fprintln(w io.Writer, v ...interface{}) (int, error)
@@ -44,6 +45,11 @@ func (l logger) Errorf(format string, v ...interface{}) {
 
 // Infof prints a formatted info message
 func (l logger) Infof(format string, v ...interface{}) {
+	color.Blue(format, v...)
+}
+
+// Successf prints a formatted success message
+func (l logger) Successf(format string, v ...interface{}) {
 	color.Green(format, v...)
 }
 
