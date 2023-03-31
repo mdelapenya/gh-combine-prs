@@ -59,6 +59,14 @@ func checkIfCreatePR(branch string, body string) error {
 	}
 	survey.AskOne(titlePrompt, &prTitle)
 
+	const mainBranch = "main"
+	targetBranch := ""
+	branchPrompt := &survey.Input{
+		Message: "Which branch do you want to send the PR against?",
+		Default: mainBranch,
+	}
+	survey.AskOne(branchPrompt, &targetBranch)
+
 	if create {
 		err := pushBranch(branch)
 		if err != nil {
@@ -66,17 +74,40 @@ func checkIfCreatePR(branch string, body string) error {
 		}
 
 		extensionLogger.Infof("Creating combined PR:")
-		extensionLogger.Printf("- Head branch: %s\n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", branch, prTitle, body)
+		extensionLogger.Infof("- Head branch: %s\n - Title: %s\n - Labels: dependencies\n - Body:\n%s\n", branch, prTitle, body)
+
+		fork, err := extractFork()
+		if err != nil {
+			return err
+		}
+
+		createArgs := []string{"pr", "create", "-B", targetBranch, "--head", fmt.Sprintf("%s:%s", fork, branch), "--title", prTitle, "--body", body, "--label", "dependencies"}
+		extensionLogger.Infof("Running: gh %s\n", strings.Join(createArgs, " "))
 
 		if !dryRunFlag {
-			_, err := ghExec("pr", "create", "--title", prTitle, "--body", body, "--label", "dependencies")
+			_, err := ghExec(createArgs...)
 			if err != nil {
 				return err
 			}
 		}
+
+		extensionLogger.Successf("Done! The combined PR has been sent")
 	}
 
 	return nil
+}
+
+func extractFork() (string, error) {
+	extensionLogger.Debugf("Extracting fork for the current repository\n")
+
+	stdOut, err := ghExec("repo", "view", "--json", "owner", "--template", "{{.owner.login}}")
+	if err != nil {
+		return "", err
+	}
+
+	fork := stdOut.String()
+	extensionLogger.Infof("Fork detected: %s\n", fork)
+	return fork, nil
 }
 
 func fetchAndSelectPRs(interactive bool) ([]PullRequest, error) {
