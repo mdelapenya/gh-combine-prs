@@ -115,7 +115,7 @@ func extractFork() (string, error) {
 	}
 
 	fork := stdOut.String()
-	extensionLogger.Infof("Fork detected: %s\n", fork)
+	extensionLogger.Debugf("Fork detected: %s\n", fork)
 	return fork, nil
 }
 
