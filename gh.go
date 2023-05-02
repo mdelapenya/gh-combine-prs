@@ -81,7 +81,16 @@ func checkIfCreatePR(branch string, body string) error {
 			return err
 		}
 
-		createArgs := []string{"pr", "create", "-B", targetBranch, "--head", fmt.Sprintf("%s:%s", fork, branch), "--title", prTitle, "--body", body, "--label", "dependencies"}
+		whoIam := fmt.Sprintf("%s:%s", whoami(), branch)
+		targetFork := ""
+		forkPrompt := &survey.Select{
+			Message: "Which remote do you want to send the PR against?",
+			Options: []string{fmt.Sprintf("%s:%s", fork, branch), whoIam},
+			Default: whoIam,
+		}
+		survey.AskOne(forkPrompt, &targetFork)
+
+		createArgs := []string{"pr", "create", "-B", targetBranch, "--head", targetFork, "--title", prTitle, "--body", body, "--label", "dependencies"}
 		extensionLogger.Infof("Running: gh %s\n", strings.Join(createArgs, " "))
 
 		if !dryRunFlag {
@@ -180,4 +189,15 @@ func viewPR(pr PullRequest) (string, error) {
 	}
 
 	return stdOut.String(), nil
+}
+
+func whoami() string {
+	response := struct{ Login string }{}
+	err := ghClient.Get("user", &response)
+	if err != nil {
+		extensionLogger.Errorf("%v", err)
+		return "origin"
+	}
+
+	return response.Login
 }

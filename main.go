@@ -69,8 +69,6 @@ func main() {
 		usage(1, "ERROR: --query is required")
 	}
 
-	whoami()
-
 	extensionLogger.Debugf("Dry-run mode: %t\n", dryRunFlag)
 
 	selectedPRs, err := fetchAndSelectPRs(interactiveFlag)
@@ -216,16 +214,6 @@ Arguments:
 
 	// exit execution after printing usage
 	os.Exit(exitCode)
-}
-
-func whoami() {
-	response := struct{ Login string }{}
-	err := ghClient.Get("user", &response)
-	if err != nil {
-		extensionLogger.Errorf("%v", err)
-		return
-	}
-	extensionLogger.Debugf("Running as %s\n", response.Login)
 }
 
 // For more examples of using go-gh, see:
