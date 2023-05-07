@@ -2,6 +2,8 @@ package main
 
 import (
 	"os/exec"
+
+	survey "github.com/AlecAivazis/survey/v2"
 )
 
 func checkoutBranch(branch string) error {
@@ -53,7 +55,16 @@ func mergeBranch(branch string, target string) error {
 	err = gitExec("merge", target, "--no-edit")
 	if err != nil {
 		extensionLogger.Errorf("unable to merge: %v", err)
-		return gitExec("merge", "--abort")
+
+		resolved := false
+		prompt := &survey.Confirm{
+			Message: "We have found merge conflicts. Please go back to your editor, resolve them including commit, and come back to this prompt to press 'Yes'. Did you resolve them?",
+		}
+		survey.AskOne(prompt, &resolved)
+
+		if !resolved {
+			return gitExec("merge", "--abort")
+		}
 	}
 
 	extensionLogger.Successf("Branch %s merged into %s\n", target, branch)
