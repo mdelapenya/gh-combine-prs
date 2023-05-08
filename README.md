@@ -31,7 +31,7 @@ gh extension install mdelapenya/gh-combine-prs
 ```
 cd $DIRECTORY_OF_YOUR_REPO
 
-gh combine-prs --query "QUERY"
+gh combine-prs --query "author:app/dependabot" --interactive --verbose --skip-pr-check
 ```
 
 ### Required arguments
