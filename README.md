@@ -14,6 +14,10 @@ This tool does not automerge into the `master`/`main` branch - it just attempts 
 *Note: When you merge the combined PR, it is recommended that you create a Merge Commit.
 This allows GitHub to automatically detect that all of the original combined PRs have been merged, so that their state can be set correctly.*
 
+## Inspiration
+
+This tool has been created after using @rnorth's [combine-prs](https://github.com/rnorth/gh-combine-prs) tool for a while, but creating an interactive version that allows you to select which PRs to combine.
+
 ## Installation
 
 Prerequisites:
