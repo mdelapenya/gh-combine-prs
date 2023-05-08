@@ -1,14 +1,26 @@
-name: release
+name: Release
+
 on:
   push:
     tags:
       - "v*"
-permissions:
-  contents: write
 
 jobs:
-  release:
+  goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: cli/gh-extension-precompile@v1
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v4
+      with:
+        args: release --rm-dist
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
