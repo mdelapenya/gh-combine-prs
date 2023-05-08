@@ -15,7 +15,7 @@ func checkoutPR(pr PullRequest) error {
 	extensionLogger.Debugf("Checking out #%d\n", pr.Number)
 
 	if !dryRunFlag {
-		_, err := ghExec("pr", "checkout", fmt.Sprintf("%d", pr.Number))
+		_, err := ghExec("pr", "checkout", fmt.Sprintf("%d", pr.Number), "--force")
 		if err != nil {
 			return err
 		}
