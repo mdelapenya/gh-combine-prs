@@ -41,12 +41,18 @@ gh combine-prs --query "QUERY"
             to combine Dependabot PRs
 
 ### Optional arguments
+    --dry-run
+            If set, will not actually merge the PRs, forcing verbose mode to show internal steps. Defaults to false when not specified
+    --interactive
+            Enable interactive mode. If set, will prompt for selecting the PRs to merge
     --limit LIMIT
             sets the maximum number of PRs that will be combined.
             Defaults to 50
     --skip-pr-check
             if set, will combine matching PRs even if they are not passing checks.
             Defaults to false when not specified
+    --verbose
+            if set, will print verbose output. Defaults to false when not specified
 
 ## License
 
