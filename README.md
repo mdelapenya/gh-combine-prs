@@ -7,7 +7,7 @@ The tool will attempt to create one PR that contains all PRs that:
 
 * match a provided query - e.g. `--query "author:app/dependabot"` so that only Dependabot PRs are processed
 * and have checks passing
-* and that can be merged cleanly - e.g. if two combinable PRs conflict with one another, only one will be merged.
+* and that can be merged cleanly - e.g. if two combinable PRs conflict with one another, it will allow you to resolve the conflicts and continue
 
 This tool does not automerge into the `master`/`main` branch - it just attempts to create one unified PR for review and automated checks to run against.
 
