@@ -131,7 +131,9 @@ func main() {
 		panic(err)
 	}
 
-	body := "This PR combines the following PRs:\n\n"
+	command := strings.Join(os.Args, " ")
+	disclaimer := ":warning: This PR has been created with the [combine-prs](https://github.com/mdelapenya/gh-combine-prs) `gh` extension.\nCommand:" + command + ".\n\n"
+	body := disclaimer + "It combines the following PRs:\n\n"
 	relatedIssuesText := "## Related Issues:\n\n"
 
 	for _, pr := range confirmedPRs {
