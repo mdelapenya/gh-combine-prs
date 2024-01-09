@@ -3,7 +3,7 @@ module github.com/mdelapenya/gh-multi-merge-prs
 go 1.19
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.3.6
+	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/cli/go-gh v1.2.1
 	github.com/fatih/color v1.14.1
 )
