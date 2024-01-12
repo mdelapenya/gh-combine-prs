@@ -1,4 +1,4 @@
-module github.com/mdelapenya/gh-multi-merge-prs
+module github.com/mdelapenya/gh-combine-prs
 
 go 1.19
 
