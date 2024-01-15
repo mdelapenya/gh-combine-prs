@@ -131,8 +131,11 @@ func main() {
 		panic(err)
 	}
 
-	command := strings.Join(os.Args, " ")
-	disclaimer := ":warning: This PR has been created with the [combine-prs](https://github.com/mdelapenya/gh-combine-prs) `gh` extension.\nCommand:" + command + ".\n\n"
+	executable := []string{"gh", "combine-prs"}
+	executable = append(executable, os.Args[1:]...)
+
+	command := strings.Join(executable, " ")
+	disclaimer := "> [!NOTE]\n>This PR has been created with the [combine-prs](https://github.com/mdelapenya/gh-combine-prs) `gh` extension:\n\n>" + command + ".\n\n"
 	body := disclaimer + "It combines the following PRs:\n\n"
 	relatedIssuesText := "## Related Issues:\n\n"
 
