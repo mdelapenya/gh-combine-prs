@@ -43,14 +43,12 @@ func checkPassingChecks(pr PullRequest) (bool, error) {
 	return true, nil
 }
 
-func checkIfCreatePR(branch string, body string) error {
+func checkIfCreatePR(branch string, defaultPRTitle string, body string) error {
 	create := false
 	prompt := &survey.Confirm{
 		Message: "Do you want to submit the combined PR?",
 	}
 	survey.AskOne(prompt, &create)
-
-	const defaultPRTitle = "Combined dependencies PR"
 
 	prTitle := ""
 	titlePrompt := &survey.Input{
