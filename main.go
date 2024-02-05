@@ -124,7 +124,9 @@ func main() {
 		panic(err)
 	}
 
-	branchName := fmt.Sprintf("%s-%s", combinedPRsBranchName, titlesHash(confirmedPRs))
+	var prTitle = combineTitles(confirmedPRs)
+
+	branchName := fmt.Sprintf("%s-%s", combinedPRsBranchName, titlesHash(prTitle))
 
 	err = createBranch(branchName, defaultBranch)
 	if err != nil {
@@ -162,9 +164,7 @@ func main() {
 		body += "\n" + relatedIssuesText
 	}
 
-	const defaultPRTitle = "Combined dependencies PR"
-
-	err = checkIfCreatePR(branchName, defaultPRTitle, body)
+	err = checkIfCreatePR(branchName, prTitle, body)
 	if err != nil {
 		panic(err)
 	}
@@ -183,16 +183,9 @@ func defaultBranch() (string, error) {
 }
 
 // titlesHash returns a hash of the PR titles
-func titlesHash(prs []PullRequest) string {
-	var titles []string
-	for _, pr := range prs {
-		titles = append(titles, pr.Title)
-	}
-
-	decoded := strings.Join(titles, "-")
-
+func titlesHash(prTitle string) string {
 	h := fnv.New32a()
-	_, err := h.Write([]byte(decoded))
+	_, err := h.Write([]byte(prTitle))
 	if err != nil {
 		panic(err)
 	}
