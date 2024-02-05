@@ -35,20 +35,6 @@ func init() {
 	flag.StringVar(&queryFlag, "query", "", `sets the query used to find combinable PRs. e.g. --query "author:app/dependabot to combine Dependabot PRs`)
 	flag.BoolVar(&skipPRCheckFlag, "skip-pr-check", false, `if set, will combine matching PRs even if they are not passing checks. Defaults to false when not specified`)
 	flag.BoolVar(&verboseFlag, "verbose", false, `if set, will print verbose output. Defaults to false when not specified`)
-
-	client, err := gh.RESTClient(nil)
-	if err != nil {
-		panic(err)
-	}
-	ghClient = client
-
-	repo, err := gh.CurrentRepository()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Current repository is %s/%s\n", repo.Owner(), repo.Name())
-
-	currentRepo = repo
 }
 
 func main() {
@@ -68,6 +54,20 @@ func main() {
 	if queryFlag == "" {
 		usage(1, "ERROR: --query is required")
 	}
+
+	client, err := gh.RESTClient(nil)
+	if err != nil {
+		panic(err)
+	}
+	ghClient = client
+
+	repo, err := gh.CurrentRepository()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Current repository is %s/%s\n", repo.Owner(), repo.Name())
+
+	currentRepo = repo
 
 	extensionLogger.Debugf("Dry-run mode: %t\n", dryRunFlag)
 
