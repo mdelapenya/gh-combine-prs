@@ -162,7 +162,9 @@ func main() {
 		body += "\n" + relatedIssuesText
 	}
 
-	err = checkIfCreatePR(branchName, body)
+	const defaultPRTitle = "Combined dependencies PR"
+
+	err = checkIfCreatePR(branchName, defaultPRTitle, body)
 	if err != nil {
 		panic(err)
 	}
