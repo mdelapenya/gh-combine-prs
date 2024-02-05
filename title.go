@@ -2,6 +2,11 @@ package main
 
 import "strings"
 
+const (
+	bumpPrefix   string = "chore(deps): bump"
+	udpatePrefix string = "chore(deps): update"
+)
+
 func combineTitles(prs []PullRequest) string {
 	if len(prs) == 1 {
 		return prs[0].Title
@@ -9,8 +14,6 @@ func combineTitles(prs []PullRequest) string {
 
 	var title string
 
-	const bumpPrefix string = "chore(deps): bump"
-	const udpatePrefix string = "chore(deps): update"
 	if strings.HasPrefix(prs[0].Title, bumpPrefix) {
 		title = bumpPrefix
 	} else if strings.HasPrefix(prs[0].Title, udpatePrefix) {
@@ -28,5 +31,5 @@ func combineTitles(prs []PullRequest) string {
 		}
 	}
 
-	return title
+	return strings.TrimSpace(title)
 }
