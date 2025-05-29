@@ -7,7 +7,7 @@ toolchain go1.24.1
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/cli/go-gh v1.2.1
-	github.com/cli/go-gh/v2 v2.12.0
+	github.com/cli/go-gh/v2 v2.12.1
 	github.com/fatih/color v1.18.0
 )
 
