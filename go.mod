@@ -2,7 +2,7 @@ module github.com/mdelapenya/gh-combine-prs
 
 go 1.23.0
 
-toolchain go1.25.2
+toolchain go1.24.1
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
