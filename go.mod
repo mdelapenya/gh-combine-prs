@@ -7,7 +7,6 @@ toolchain go1.24.1
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/cli/go-gh v1.2.1
-	github.com/cli/go-gh/v2 v2.12.0
 	github.com/fatih/color v1.18.0
 )
 
@@ -26,7 +25,6 @@ require (
 	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/thlib/go-timezone-local v0.0.0-20210907160436-ef149e42d28e // indirect
-	golang.org/x/net v0.36.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/term v0.30.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
